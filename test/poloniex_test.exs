@@ -4,6 +4,8 @@ defmodule PoloniexTest do
   doctest Poloniex
 
   test "correctly returns float from the USDT/BTC ticker" do
-    assert is_float(Poloniex.ticker_last("USDT","BTC"))
+    num = Poloniex.return_ticker
+    |> Poloniex.ticker_last("USDT","BTC")
+    assert is_float(num)
   end
 end

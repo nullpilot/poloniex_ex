@@ -8,8 +8,8 @@ defmodule Poloniex do
   @doc """
   Returns last ticker float for pair of first and second params
   """
-  def ticker_last(first, second) do
-    return_ticker[first <> "_" <> second]["last"]
+  def ticker_last(tickers, first, second) when is_map(tickers) do
+    tickers[first <> "_" <> second]["last"]
     |> String.to_float
   end
 
