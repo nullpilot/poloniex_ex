@@ -14,13 +14,21 @@ defmodule Poloniex do
   end
 
   def return_ticker do
-    {:ok, response} = get("returnTicker")
+    {:ok, response} = [command: "returnTicker"] |> URI.encode_query |> get
     response.body
     |> Poison.Parser.parse!
   end
 
+  def return_order_book(first, second, options \\ []) do
+    params = options ++ [command: "returnOrderBook", currencyPair: "#{first}_#{second}"]
+    {:ok, response} = params |> URI.encode_query |> Poloniex.get
+    response.body
+    |> Poison.Parser.parse!
+  end
+
+
   defp process_url(url) when is_bitstring(url) do
-    "https://poloniex.com/public?command=" <> url
+    "https://poloniex.com/public?" <> url
   end
 
   defp process_request_headers(headers) when is_map(headers) do
