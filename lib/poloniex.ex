@@ -66,8 +66,8 @@ defmodule Poloniex.LoanOrder do
   use ExConstructor
   use Vex.Struct
 
-  validates :rate, presence: true
-  validates :amount, presence: true
+  validates :rate, &is_float/1
+  validates :amount, &is_float/1
   validates :range_min, presence: true
   validates :range_max, presence: true
 
