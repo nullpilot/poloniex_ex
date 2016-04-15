@@ -26,11 +26,10 @@ defmodule Poloniex do
     |> Poison.Parser.parse!
   end
 
-  def returnLoanOrders(currency) do
+  def return_loan_orders(currency) do
     params = options ++ [command: "returnLoanOrders", currency: currency]
     {:ok, response} = params |> URI.encode_query |> Poloniex.get
-    response.body
-    |> Poison.Parser.parse!
+    {:ok, Poison.Parser.parse!(response.body)}
   end
 
 
