@@ -46,5 +46,7 @@ defmodule Poloniex do
 end
 
 defmodule Poloniex.LoanOrder do
+  # Structs vs maps https://engineering.appcues.com/2016/02/02/too-many-dicts.html
   defstruct [rate: 0.0, amount: 0.0, range_min: 0.0, range_max: 0.0]
+  use ExConstructor
 end
