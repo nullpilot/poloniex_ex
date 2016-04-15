@@ -26,6 +26,13 @@ defmodule Poloniex do
     |> Poison.Parser.parse!
   end
 
+  def returnLoanOrders(currency) do
+    params = options ++ [command: "returnLoanOrders", currency: currency]
+    {:ok, response} = params |> URI.encode_query |> Poloniex.get
+    response.body
+    |> Poison.Parser.parse!
+  end
+
 
   defp process_url(url) when is_bitstring(url) do
     "https://poloniex.com/public?" <> url
