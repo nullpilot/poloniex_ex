@@ -32,9 +32,19 @@ defmodule Poloniex do
 
     data = response.body
     |> Poison.Parser.parse!
-    |> Map.update!("demands", fn val -> Enum.map(val, &Poloniex.LoanOrder.new/1) end)
-    |> Map.update!("offers", fn val -> Enum.map(val, &Poloniex.LoanOrder.new/1) end)
+    |> Map.update!("demands", fn loan_orders -> Enum.map(loan_orders, &convert_and_construct/1) end)
+    |> Map.update!("offers", fn loan_orders-> Enum.map(loan_orders, &convert_and_construct/1) end)
     {:ok, data}
+  end
+
+  def convert_and_construct(raw_loan_order) do
+    loan_order = for {k,v} <- raw_loan_order, into: %{} do
+      cond do
+        is_integer(v) or is_float(v) -> {k,v}
+        true -> {k, String.to_float(v)}
+      end
+     end
+    Poloniex.LoanOrder.new(loan_order)
   end
 
 
