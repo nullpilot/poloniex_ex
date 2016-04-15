@@ -29,7 +29,12 @@ defmodule Poloniex do
   def return_loan_orders(currency) do
     params = [command: "returnLoanOrders", currency: currency]
     {:ok, response} = params |> URI.encode_query |> Poloniex.get
-    {:ok, Poison.Parser.parse!(response.body)}
+
+    data = response.body
+    |> Poison.Parser.parse!
+    |> Map.update!("demands", fn val -> Enum.map(val, &Poloniex.LoanOrder.new/1) end)
+    |> Map.update!("offers", fn val -> Enum.map(val, &Poloniex.LoanOrder.new/1) end)
+    {:ok, data}
   end
 
 
@@ -47,6 +52,13 @@ end
 
 defmodule Poloniex.LoanOrder do
   # Structs vs maps https://engineering.appcues.com/2016/02/02/too-many-dicts.html
-  defstruct [rate: 0.0, amount: 0.0, range_min: 0.0, range_max: 0.0]
+  defstruct [rate: nil, amount: nil, range_min: nil, range_max: nil]
   use ExConstructor
+  use Vex.Struct
+
+  validates :rate, presence: true
+  validates :amount, presence: true
+  validates :range_min, presence: true
+  validates :range_max, presence: true
+
 end
