@@ -27,7 +27,7 @@ defmodule Poloniex do
   end
 
   def return_loan_orders(currency) do
-    params = [command: "returnLoanOrders", currency: currency]
+    params = [command: "returnLoanOrders", currency: currency, limit: 999999]
     {:ok, response} = params |> URI.encode_query |> Poloniex.get
 
     data = response.body
