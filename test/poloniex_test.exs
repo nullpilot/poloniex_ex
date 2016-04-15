@@ -14,8 +14,8 @@ defmodule PoloniexTest do
     assert is_list(book["asks"])
   end
 
-  test "returns loan order book" do
-    {:ok, loan_book} = Poloniex.return_order_book("BTC")
-    assert is_list(book["asks"])
+  test "returns loan orders" do
+    {:ok, loan_book} = Poloniex.return_loan_orders("BTC")
+    assert is_list(loan_book["offers"]) && is_list(loan_book["demands"])
   end
 end
