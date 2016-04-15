@@ -43,5 +43,8 @@ defmodule Poloniex do
 
   defp process_request_headers(headers), do: headers
 
+end
 
+defmodule Poloniex.LoanOrder do
+  defstruct [rate: 0.0, amount: 0.0, range_min: 0.0, range_max: 0.0]
 end
