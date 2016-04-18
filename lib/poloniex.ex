@@ -80,3 +80,8 @@ defmodule Poloniex.LoanOrder do
   validates :range_max, presence: true
 
 end
+
+defmodule Poloniex.Trade do
+   defstruct [date: nil, type: nil, rate: nil, amount: nil]
+   use ExConstructor
+end
