@@ -24,7 +24,7 @@ defmodule Poloniex do
     params = options ++ [command: "returnOrderBook", currencyPair: "#{first}_#{second}"]
     {:ok, response} = params |> URI.encode_query |> Poloniex.get
     data = response.body
-    |> Poison.Parser.parse!
+      |> Poison.Parser.parse!
     {:ok, data}
   end
 
