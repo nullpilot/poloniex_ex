@@ -26,7 +26,15 @@ defmodule Poloniex do
     |> Poison.Parser.parse!
   end
 
+  def return_trade_history(first, second, start_time, end_time) do
+    params = [command: "returnTradeHistory", currencyPair: "#{first}_#{second}", from: start_time, to: end_time]
+    {:ok, response} = params |> URI.encode_query |> Poloniex.get
+    response.body
+      |> Poison.Parser.parse!
+  end
+
   def return_loan_orders(currency) do
+    # official documentation is missing the mention of limit param but it used on the poloniex loan page
     params = [command: "returnLoanOrders", currency: currency, limit: 999999]
     {:ok, response} = params |> URI.encode_query |> Poloniex.get
 
