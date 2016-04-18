@@ -15,22 +15,25 @@ defmodule Poloniex do
 
   def return_ticker do
     {:ok, response} = [command: "returnTicker"] |> URI.encode_query |> get
-    response.body
+    data = response.body
     |> Poison.Parser.parse!
+    {:ok, data}
   end
 
   def return_order_book(first, second, options \\ []) do
     params = options ++ [command: "returnOrderBook", currencyPair: "#{first}_#{second}"]
     {:ok, response} = params |> URI.encode_query |> Poloniex.get
-    response.body
+    data = response.body
     |> Poison.Parser.parse!
+    {:ok, data}
   end
 
   def return_trade_history(first, second, start_time, end_time) do
     params = [command: "returnTradeHistory", currencyPair: "#{first}_#{second}", from: start_time, to: end_time]
     {:ok, response} = params |> URI.encode_query |> Poloniex.get
-    response.body
+    data = response.body
       |> Poison.Parser.parse!
+    {:ok, data}
   end
 
   def return_loan_orders(currency) do

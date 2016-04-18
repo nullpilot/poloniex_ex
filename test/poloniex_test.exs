@@ -18,4 +18,5 @@ defmodule PoloniexTest do
     {:ok, loan_book} = Poloniex.return_loan_orders("BTC")
     assert Vex.valid?(hd loan_book["offers"]) && Vex.valid?(hd loan_book["demands"])
   end
+
 end
