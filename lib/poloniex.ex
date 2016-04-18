@@ -56,6 +56,14 @@ defmodule Poloniex do
     {:ok, data}
   end
 
+  def return_currencies do
+      params = [command: "returnCurrencies"]
+      {:ok, response} = params |> URI.encode_query |> Poloniex.get
+      data = response.body
+      |> Poison.Parser.parse!
+      {:ok, data}
+  end
+
   def convert_and_construct(raw_loan_order) do
     loan_order = for {k,v} <- raw_loan_order, into: %{} do
       cond do
