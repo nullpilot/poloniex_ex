@@ -36,6 +36,14 @@ defmodule Poloniex do
     {:ok, data}
   end
 
+  def return_24h_volume do
+     params = [command: "return24hVolume"]
+     {:ok, response} = params |> URI.encode_query |> Poloniex.get
+     data = response.body
+       |> Poison.Parser.parse!
+     {:ok, data}
+  end
+
   def return_loan_orders(currency) do
     # official documentation is missing the mention of limit param but it used on the poloniex loan page
     params = [command: "returnLoanOrders", currency: currency, limit: 999999]
