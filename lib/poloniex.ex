@@ -15,7 +15,7 @@ defmodule Poloniex do
 
   def return_ticker do
     {:ok, response} = [command: "returnTicker"] |> URI.encode_query |> get
-    
+
     {:ok, response.body}
   end
 
@@ -100,7 +100,7 @@ defmodule Poloniex.LoanOrder do
 
 end
 
-defmodule Poloniex.Trade do
+defmodule Poloniex.TradeRecord do
    defstruct [date: nil, type: nil, rate: nil, amount: nil]
    use ExConstructor
 end

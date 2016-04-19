@@ -1,4 +1,5 @@
 defmodule Poloniex.Trading do
+  use HTTPoison.Base
 
   def return_balances() do
   end
@@ -20,7 +21,7 @@ defmodule Poloniex.Trading do
     If successful, the method will return the order number.
   """
   def buy(first, second, rate, amount) do
-    
+
   end
 
   def sell() do
@@ -91,5 +92,18 @@ defmodule Poloniex.Trading do
 
   end
 
+  def generate_sign_header(body) do
+    Base.encode16(:crypto.hmac(:sha256, api_key, body))
+  end
+
+  def api_key do
+    Application.get_env(Poloniex, :key)
+  end
+
+  defp process_request_headers(headers) when is_map(headers) do
+    Enum.into(headers, ["Key": api_key])
+  end
+
+  defp process_request_headers(headers), do: headers ++ ["Key": api_key]
 
 end
