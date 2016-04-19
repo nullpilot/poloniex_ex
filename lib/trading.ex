@@ -15,9 +15,12 @@ defmodule Poloniex.Trading do
   def return_ordertrades() do
   end
 
-
-  def buy() do
-
+  @doc """
+    Places a limit buy order in a given market.Required POST parameters are "currencyPair", "rate", and "amount".
+    If successful, the method will return the order number.
+  """
+  def buy(first, second, rate, amount) do
+    
   end
 
   def sell() do

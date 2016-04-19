@@ -15,33 +15,29 @@ defmodule Poloniex do
 
   def return_ticker do
     {:ok, response} = [command: "returnTicker"] |> URI.encode_query |> get
-    data = response.body
-    |> Poison.Parser.parse!
-    {:ok, data}
+    
+    {:ok, response.body}
   end
 
   def return_order_book(first, second, options \\ []) do
     params = options ++ [command: "returnOrderBook", currencyPair: "#{first}_#{second}"]
     {:ok, response} = params |> URI.encode_query |> Poloniex.get
-    data = response.body
-      |> Poison.Parser.parse!
-    {:ok, data}
+
+    {:ok, response.body}
   end
 
   def return_trade_history(first, second, start_time, end_time) do
     params = [command: "returnTradeHistory", currencyPair: "#{first}_#{second}", from: start_time, to: end_time]
     {:ok, response} = params |> URI.encode_query |> Poloniex.get
-    data = response.body
-      |> Poison.Parser.parse!
-    {:ok, data}
+
+    {:ok, response.body}
   end
 
   def return_24h_volume do
      params = [command: "return24hVolume"]
      {:ok, response} = params |> URI.encode_query |> Poloniex.get
-     data = response.body
-       |> Poison.Parser.parse!
-     {:ok, data}
+
+     {:ok, response.body}
   end
 
   def return_loan_orders(currency) do
@@ -50,7 +46,7 @@ defmodule Poloniex do
     {:ok, response} = params |> URI.encode_query |> Poloniex.get
 
     data = response.body
-    |> Poison.Parser.parse!
+
     |> Map.update!("demands", fn loan_orders -> Enum.map(loan_orders, &convert_and_construct/1) end)
     |> Map.update!("offers", fn loan_orders-> Enum.map(loan_orders, &convert_and_construct/1) end)
     {:ok, data}
@@ -59,9 +55,8 @@ defmodule Poloniex do
   def return_currencies do
       params = [command: "returnCurrencies"]
       {:ok, response} = params |> URI.encode_query |> Poloniex.get
-      data = response.body
-      |> Poison.Parser.parse!
-      {:ok, data}
+
+      {:ok, response.body}
   end
 
   def convert_and_construct(raw_loan_order) do
@@ -84,6 +79,11 @@ defmodule Poloniex do
   end
 
   defp process_request_headers(headers), do: headers
+
+  defp process_response_body(body) do
+     Poison.Parser.parse! body
+   end
+
 
 end
 
