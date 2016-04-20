@@ -21,7 +21,8 @@ defmodule Poloniex.Trading do
     If successful, the method will return the order number.
   """
   def buy(first, second, rate, amount) do
-
+    params = [currencyPair: Poloniex.to_pair(first, second), rate: rate, amount: amount]
+    {:ok, response} = Poloniex.Trading.post  
   end
 
   def sell() do

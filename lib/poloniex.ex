@@ -9,9 +9,12 @@ defmodule Poloniex do
   Returns last ticker float for pair of first and second params
   """
   def ticker_last(tickers, first, second) when is_map(tickers) do
-    tickers[first <> "_" <> second]["last"]
+    pair = to_pair(first, second)
+    tickers[pair]["last"]
     |> String.to_float
   end
+
+  def to_pair(first, second), do: first <> "_" <> second
 
   def return_ticker do
     {:ok, response} = [command: "returnTicker"] |> URI.encode_query |> get
@@ -59,7 +62,7 @@ defmodule Poloniex do
       {:ok, response.body}
   end
 
-  def convert_and_construct(raw_loan_order) do
+  defp convert_and_construct(raw_loan_order) do
     loan_order = for {k,v} <- raw_loan_order, into: %{} do
       cond do
         is_integer(v) or is_float(v) -> {k,v}
