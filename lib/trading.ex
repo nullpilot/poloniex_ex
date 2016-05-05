@@ -22,7 +22,7 @@ defmodule Poloniex.Trading do
   """
   def buy(first, second, rate, amount) do
     params = [currencyPair: Poloniex.to_pair(first, second), rate: rate, amount: amount]
-    {:ok, response} = Poloniex.Trading.post  
+    {:ok, response} = Poloniex.Trading.post "", {:form, params}
   end
 
   def sell() do
@@ -99,6 +99,11 @@ defmodule Poloniex.Trading do
 
   def api_key do
     Application.get_env(Poloniex, :key)
+  end
+
+
+  defp process_url(url) do
+    "https://poloniex.com/tradingApi" <> url
   end
 
   defp process_request_headers(headers) when is_map(headers) do
