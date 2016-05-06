@@ -1,5 +1,6 @@
 defmodule Poloniex do
   use HTTPoison.Base
+  alias Poloniex.{OrderBookResult, TradeRecord, LoanOrder}
 
   @moduledoc """
   Wrapper around public Poloniex public APIs for market data: including trading pairs of Ethereum, Bitcoin, Litecoin, Dogecoin and others.
@@ -26,7 +27,7 @@ defmodule Poloniex do
     params = options ++ [command: "returnOrderBook", currencyPair: "#{first}_#{second}"]
     {:ok, response} = params |> URI.encode_query |> Poloniex.get
 
-    {:ok, response.body}
+    {:ok, OrderBookResult.new(response.body)}
   end
 
   def return_trade_history(first, second, start_time, end_time) do
@@ -69,7 +70,7 @@ defmodule Poloniex do
         true -> {k, String.to_float(v)}
       end
      end
-    Poloniex.LoanOrder.new(loan_order)
+    LoanOrder.new(loan_order)
   end
 
 
@@ -106,4 +107,9 @@ end
 defmodule Poloniex.TradeRecord do
    defstruct [date: nil, type: nil, rate: nil, amount: nil]
    use ExConstructor
+end
+
+defmodule Poloniex.OrderBookResult do
+  defstruct [bids: [], asks: []]
+  use ExConstructor
 end
