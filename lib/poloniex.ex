@@ -23,6 +23,9 @@ defmodule Poloniex do
     {:ok, response.body}
   end
 
+  @doc """
+  Accepts :depth option
+  """
   def return_order_book(first, second, options \\ []) do
     params = options ++ [command: "returnOrderBook", currencyPair: "#{first}_#{second}"]
     {:ok, response} = params |> URI.encode_query |> Poloniex.get
