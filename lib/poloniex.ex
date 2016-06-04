@@ -24,9 +24,10 @@ defmodule Poloniex do
   end
 
   @doc """
-  Accepts :depth option
+  Accepts :depth option argument
   """
   def return_order_book(first, second, options \\ []) do
+    #TODO Maybe use __CALLER__ for getting function atom and DRYing params?
     params = options ++ [command: "returnOrderBook", currencyPair: "#{first}_#{second}"]
     {:ok, response} = params |> URI.encode_query |> Poloniex.get
 
@@ -53,7 +54,6 @@ defmodule Poloniex do
     {:ok, response} = params |> URI.encode_query |> Poloniex.get
 
     data = response.body
-
     |> Map.update!("demands", fn loan_orders -> Enum.map(loan_orders, &convert_and_construct/1) end)
     |> Map.update!("offers", fn loan_orders-> Enum.map(loan_orders, &convert_and_construct/1) end)
     {:ok, data}
