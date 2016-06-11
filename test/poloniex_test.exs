@@ -11,7 +11,7 @@ defmodule PoloniexTest do
 
   test "returns order book" do
     {:ok, book} = Poloniex.return_order_book("BTC", "ETH")
-    assert is_list(book["asks"])
+    assert is_list(book.asks)
   end
 
   test "returns loan orders" do
