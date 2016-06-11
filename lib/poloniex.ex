@@ -1,6 +1,6 @@
 defmodule Poloniex do
   use HTTPoison.Base
-  alias Poloniex.{OrderBookResult, TradeRecord, LoanOrder}
+  alias Poloniex.{OrderBookResult, TradeRecord, LoanOrder, TickerData}
 
   @moduledoc """
   Wrapper around public Poloniex public APIs for market data: including trading pairs of Ethereum, Bitcoin, Litecoin, Dogecoin and others.
@@ -11,16 +11,34 @@ defmodule Poloniex do
   """
   def ticker_last(tickers, first, second) when is_map(tickers) do
     pair = to_pair(first, second)
-    tickers[pair]["last"]
+    tickers[pair].last
     |> String.to_float
   end
 
   def to_pair(first, second), do: first <> "_" <> second
 
+  @doc """
+  Returns a map of TickerData struct with the following fields
+  defstruct [
+    id: nil,
+    last: nil,
+    lowestAsk: nil,
+    highestBid: nil,
+    percentChange: nil,
+    baseVolume: nil,
+    quoteVolume: nil,
+    isFrozen: nil,
+    high24hr: nil,
+    low24hr: nil ]
+
+  """
   def return_ticker do
     {:ok, response} = [command: "returnTicker"] |> URI.encode_query |> get
+    tickers = response.body
+      |> Enum.map(fn {k,v} -> {k, TickerData.new(v)} end)
+      |> Enum.into(%{})
 
-    {:ok, response.body}
+    {:ok, tickers}
   end
 
   @doc """
@@ -115,4 +133,22 @@ end
 defmodule Poloniex.OrderBookResult do
   defstruct [bids: [], asks: []]
   use ExConstructor
+end
+
+
+defmodule Poloniex.TickerData do
+  defstruct [
+    id: nil,
+    last: nil,
+    lowestAsk: nil,
+    highestBid: nil,
+    percentChange: nil,
+    baseVolume: nil,
+    quoteVolume: nil,
+    isFrozen: nil,
+    high24hr: nil,
+    low24hr: nil ]
+
+  use ExConstructor
+  use Vex.Struct
 end
