@@ -135,7 +135,6 @@ defmodule Poloniex.OrderBookResult do
   use ExConstructor
 end
 
-
 defmodule Poloniex.TickerData do
   defstruct [
     id: nil,
