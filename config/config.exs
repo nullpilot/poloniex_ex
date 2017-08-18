@@ -10,7 +10,10 @@ use Mix.Config
 
 # You can configure for your application as:
 #
-#     config :poloniex, key: :value
+#     config :poloniex, Poloniex.Trading, [
+#       key: "<your_api_key>"
+#       secret: "<your_api_secret>"
+#     ]
 #
 # And access this configuration in your application as:
 #

@@ -1,28 +1,38 @@
 defmodule Poloniex.Trading do
   use HTTPoison.Base
 
+  @endoint "https://poloniex.com/tradingApi"
+
+  @doc """
+    Queries a full list of balances in your account.
+  """
   def return_balances() do
+    body = [
+      nonce: get_microseconds(),
+      command: "returnBalances"
+    ]
+
+    api_query(body)
   end
 
   def return_complete_balances() do
+
   end
 
   def return_openorders() do
+
   end
 
   def return_tradehistory() do
+
   end
 
   def return_ordertrades() do
+
   end
 
-  @doc """
-    Places a limit buy order in a given market.Required POST parameters are "currencyPair", "rate", and "amount".
-    If successful, the method will return the order number.
-  """
-  def buy(first, second, rate, amount) do
-    params = [currencyPair: Poloniex.to_pair(first, second), rate: rate, amount: amount]
-    {:ok, response} = Poloniex.Trading.post "", {:form, params}
+  def buy() do
+
   end
 
   def sell() do
@@ -93,23 +103,34 @@ defmodule Poloniex.Trading do
 
   end
 
-  def generate_sign_header(body) do
-    Base.encode16(:crypto.hmac(:sha256, api_key, body))
+  defp api_query(body, options \\ []) do
+    body = URI.encode_query(body)
+
+    case post(@endoint, body, get_headers(body), options) do
+      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
+        Poison.decode(body)
+      {:ok, %HTTPoison.Response{status_code: 404}} ->
+        {:error, "Not found."}
+      {:error, %HTTPoison.Error{reason: reason}} ->
+        {:error, reason}
+    end
   end
 
-  def api_key do
-    Application.get_env(Poloniex, :key)
+  defp get_headers(body) do
+    config = Application.get_env(:poloniex, Poloniex.Trading)
+
+    [
+      "key": Keyword.get(config, :key),
+      "sign": generate_sign_header(body, Keyword.get(config, :secret)),
+      "content-type": "application/x-www-form-urlencoded; charset=utf-8"
+    ]
   end
 
-
-  defp process_url(url) do
-    "https://poloniex.com/tradingApi" <> url
+  defp get_microseconds() do
+    DateTime.utc_now |> DateTime.to_unix(:microsecond)
   end
 
-  defp process_request_headers(headers) when is_map(headers) do
-    Enum.into(headers, ["Key": api_key])
+  defp generate_sign_header(body, secret) do
+    Base.encode16(:crypto.hmac(:sha512, secret, body))
   end
-
-  defp process_request_headers(headers), do: headers ++ ["Key": api_key]
-
 end
