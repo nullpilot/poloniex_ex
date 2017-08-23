@@ -81,22 +81,12 @@ defmodule Poloniex.Trading do
   end
 
   def return_trade_history(pair, start_date, end_date) do
-    body_base = [
+    body = [
       currencyPair: pair,
       nonce: get_microseconds(),
       command: "returnTradeHistory"
-    ]
-
-    body = cond do
-      is_number(start_date) and is_number(end_date) ->
-        [{:start, start_date}, {:end, end_date} | body_base]
-      is_number(start_date) ->
-        [{:start, start_date} | body_base]
-      is_number(end_date) ->
-        [{:end, end_date} | body_base]
-      true ->
-        body_base
-    end
+    ] |> prepend_if(is_number(start_date), :start, start_date)
+      |> prepend_if(is_number(end_date), :end, end_date)
 
     api_query(body)
   end
@@ -128,7 +118,6 @@ defmodule Poloniex.Trading do
     api_query(body)
   end
 
-
   def sell(first, second, amount, rate) do
     sell(first <> "_" <> second, amount, rate)
   end
@@ -156,32 +145,74 @@ defmodule Poloniex.Trading do
     api_query(body)
   end
 
-  def moveOrder() do
+  # TODO: extra params
+  def move_order(order_number, rate) do
+    body = [
+      rate: format_number(rate),
+      orderNumber: order_number,
+      nonce: get_microseconds(),
+      command: "moveOrder"
+    ]
 
+    api_query(body)
   end
 
+  # skip for now
   def withdraw() do
 
   end
 
-  def returnFeeInfo() do
+  def return_fee_info() do
+    body = [
+      nonce: get_microseconds(),
+      command: "returnFeeInfo"
+    ]
 
+    api_query(body)
   end
 
-  def returnAvailableAccountBalances() do
+  def return_available_account_balances(account \\ nil) do
+    body_base = [
+      nonce: get_microseconds(),
+      command: "returnAvailableAccountBalances"
+    ]
 
+    if is_binary(account) do
+      api_query([{:account, account} | body_base])
+    else
+      api_query(body_base)
+    end
   end
 
-  def returnTradableBalances() do
+  def return_tradable_balances() do
+    body = [
+      nonce: get_microseconds(),
+      command: "returnTradableBalances"
+    ]
 
+    api_query(body)
   end
 
-  def transferBalance() do
+  def transfer_balance(currency, amount, from, to) do
+    body = [
+      currency: currency,
+      amount: format_number(amount),
+      fromAccount: from,
+      toAccount: to,
+      nonce: get_microseconds(),
+      command: "transferBalance"
+    ]
 
+    api_query(body)
   end
 
-  def returnMarginAccountSummary() do
+  def return_margin_account_summary() do
+    body = [
+      nonce: get_microseconds(),
+      command: "returnMarginAccountSummary"
+    ]
 
+    api_query(body)
   end
 
   def marginBuy() do
@@ -192,8 +223,18 @@ defmodule Poloniex.Trading do
 
   end
 
-  def getMarginPosition() do
+  def get_margin_position(first, second) do
+    get_margin_position(first <> "_" <> second)
+  end
 
+  def get_margin_position(pair \\ "all") do
+    body = [
+      currencyPair: pair,
+      nonce: get_microseconds(),
+      command: "getMarginPosition"
+    ]
+
+    api_query(body)
   end
 
   def createLoanOffer() do
@@ -204,12 +245,33 @@ defmodule Poloniex.Trading do
 
   end
 
-  def returnOpenLoanOffers() do
+  def return_open_loan_offers() do
+    body = [
+      nonce: get_microseconds(),
+      command: "returnOpenLoanOffers"
+    ]
 
+    api_query(body)
   end
 
-  def returnActiveLoans() do
+  def return_active_loans() do
+    body = [
+      nonce: get_microseconds(),
+      command: "returnActiveLoans"
+    ]
 
+    api_query(body)
+  end
+
+  def return_lending_history(start_date \\ nil, end_date \\ nil, limit \\ nil) do
+    body = [
+      nonce: get_microseconds(),
+      command: "returnLendingHistory"
+    ] |> prepend_if(start_date != nil, :start, start_date)
+      |> prepend_if(end_date != nil, :end, end_date)
+      |> prepend_if(limit != nil, :limit, limit)
+
+    api_query(body)
   end
 
   def toggleAutoRenew() do
@@ -225,7 +287,7 @@ defmodule Poloniex.Trading do
         Poison.decode(body)
       {:ok, %HTTPoison.Response{status_code: 404}} ->
         {:error, "Not found."}
-      {:ok, %HTTPoison.Response{status_code: 422, body: body}} ->
+      {:ok, %HTTPoison.Response{status_code: 422, body: _body}} ->
         # TODO: extract error message from response
         {:error, "Missing or malformed input"}
       {:error, %HTTPoison.Error{reason: reason}} ->
@@ -255,4 +317,10 @@ defmodule Poloniex.Trading do
     :erlang.float_to_binary(number, [:compact, { :decimals, 8 }])
   end
   defp format_number(number), do: number
+
+  defp prepend_if(body, true, key, value) do
+    [{key, value} | body]
+  end
+
+  defp prepend_if(body, _, _, _), do: body
 end
